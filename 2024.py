@@ -310,14 +310,13 @@ try:
     uso_sel = var_uso
     anio_sel = var_anio
 
-    if anio_sel == "2023 o anterior":
-        ca = 19.10
+    if anio_sel == "2022 o anterior":
+        ca = 6.1
+    elif anio_sel == "2023":
+        ca = 2
     elif anio_sel == "2024":
-        ca = 2.76
-    elif anio_sel == "2025":
-        ca = 1.36
-    else:
-        ca = 1.00
+        ca = 1
+        
 
     if uso_sel == "RESIDENCIAL":
         cu = 1.0
