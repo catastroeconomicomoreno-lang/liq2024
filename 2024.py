@@ -25,9 +25,8 @@ TABLA_BASE_IMPONIBLE = [
     (float("inf"), 14850000.0, 357480.00, 0.0172),
 ]
 
-# Porcentajes de aumento para las cuotas posteriores (Cuotas 2 a 12)
 PORCENTAJES_AUMENTO = [
-    0.0,    # Cuota 1 (Se maneja con la lógica del Art. 6 o valor directo)
+    0.0,    # Cuota 1
     0.0,    # Cuota 2
     0.0,    # Cuota 3
     19.66,  # Cuota 4
@@ -349,7 +348,6 @@ try:
     tasa_anual = round(((excedente * alic) + cfa_val), 2)
     tasa_mensual = round(tasa_anual / 12, 2)
 
-    # --- DETERMINACIÓN DEL % DE TOPE SEGÚN ARTÍCULO 6° ---
     if bi <= 4760000.0:
         pct_tope_art6 = 35.0
     elif bi <= 8500000.0:
@@ -585,13 +583,21 @@ try:
         prot_c = round(sub_c * 0.095, 2)
         salud_c = round(sub_c * 0.105, 2)
 
-        if i >= 5:
-            if abs(monto_edenor - 4000.0) < 0.01:
-                m_edenor_c = 6000.0
-            elif abs(monto_edenor - 13011.0) < 0.01:
-                m_edenor_c = 26661.0
-            else:
-                m_edenor_c = monto_edenor
+        # Lógica de Edenor según el monto inicial
+        if abs(monto_edenor - 2000.0) < 0.01:
+            if i == 1:
+                m_edenor_c = 2000.0
+            elif 2 <= i <= 7:
+                m_edenor_c = 2944.0
+            else:  # i >= 8
+                m_edenor_c = 4000.0
+        elif abs(monto_edenor - 6750.0) < 0.01:
+            if 1 <= i <= 3:
+                m_edenor_c = 6750.0
+            elif 4 <= i <= 7:
+                m_edenor_c = 8077.0
+            else:  # i >= 8
+                m_edenor_c = 13011.0
         else:
             m_edenor_c = monto_edenor
 
