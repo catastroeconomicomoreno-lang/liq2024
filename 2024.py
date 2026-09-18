@@ -6,9 +6,7 @@ import streamlit as st
 # ==============================================================================
 
 # 1. TÍTULO DE LA APLICACIÓN
-TITULO_APP = (
-    "LIQUIDADOR TASAS POR SERVICIOS GENERALES - EJERCICIO 2024"
-)
+TITULO_APP = "LIQUIDADOR TASAS POR SERVICIOS GENERALES - EJERCICIO 2024"
 
 # 2. CÁLCULO PROTOTÍPICO (Valores extraídos de la tabla de UVIS 2024)
 FACTOR_TERRENO_HASTA_10000 = 5  # UVIS
@@ -292,7 +290,7 @@ with col_val1:
 
 with col_val2:
     var_anio = st.selectbox(
-        "Valuación año:", ["2023 o anterior", "2024", "2025", "2026"]
+        "Valuación año:", ["Anterior a 2022", "2023", "2024"]
     )
 
 try:
@@ -310,13 +308,15 @@ try:
     uso_sel = var_uso
     anio_sel = var_anio
 
-    if anio_sel == "2022 o anterior":
-        ca = 6.1
+    # 1. COEFICIENTES POR AÑO ACTUALIZADOS HASTA 2024
+    if anio_sel == "Anterior a 2022":
+        ca = 6.10
     elif anio_sel == "2023":
-        ca = 2
+        ca = 2.00
     elif anio_sel == "2024":
-        ca = 1
-        
+        ca = 1.00
+    else:
+        ca = 1.00
 
     if uso_sel == "RESIDENCIAL":
         cu = 1.0
@@ -376,8 +376,16 @@ try:
         subtotal_con_desc + tasa_proteccion + tasa_salud - monto_edenor, 2
     )
 
-    if var_tope == "NO" and tasa_total < 4500.0:
-        tasa_total = 8900.0 if estado_sel == "BALDIO" else 4500.0
+    # 2. VIGENCIA DE VALORES MÍNIMOS POR USO
+    if uso_sel == "RESIDENCIAL":
+        minimo_uso = 2461.0
+    elif uso_sel == "COMERCIAL":
+        minimo_uso = 6750.0
+    else:  # INDUSTRIAL
+        minimo_uso = 13500.0
+
+    if var_tope == "NO" and tasa_total < minimo_uso:
+        tasa_total = minimo_uso
 
 
     def fmt(val):
@@ -594,8 +602,8 @@ try:
 
         total_cuota = round(sub_desc_c + prot_c + salud_c - m_edenor_c, 2)
 
-        if var_tope == "NO" and total_cuota < 4500.0:
-            total_cuota = 8900.0 if estado_sel == "BALDIO" else 4500.0
+        if var_tope == "NO" and total_cuota < minimo_uso:
+            total_cuota = minimo_uso
 
         r_c1, r_c2, r_c3, r_c4, r_c5, r_c6, r_c7 = st.columns(
             [1.3, 1, 1, 1, 1, 1, 1]
