@@ -513,7 +513,7 @@ try:
     st.markdown(
         """
     <div class="titulo-seccion-tabla">
-        Aplicación Tabla de Incrementos por Cuota (2024)
+        Aplicación Art. 15° Ord.Fiscal  7084/2023 TO 2024
     </div>
     """,
         unsafe_allow_html=True,
