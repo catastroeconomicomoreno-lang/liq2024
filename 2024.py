@@ -5,16 +5,13 @@ import streamlit as st
 # CONFIGURACIÓN DE PARÁMETROS - VERSIÓN 2024
 # ==============================================================================
 
-# 1. TÍTULO DE LA APLICACIÓN
 TITULO_APP = "LIQUIDADOR TASAS POR SERVICIOS GENERALES - EJERCICIO 2024"
 
-# 2. CÁLCULO PROTOTÍPICO (Valores extraídos de la tabla de UVIS 2024)
-FACTOR_TERRENO_HASTA_10000 = 5  # UVIS
-FACTOR_TERRENO_MAS_10000 = 5  # UVIS
-FACTOR_EDIFICADO = 100  # UVIS (CUBIERTO)
-VALOR_M2_PROTOTIPICO = 382.45  # VALOR UVIS
+FACTOR_TERRENO_HASTA_10000 = 5
+FACTOR_TERRENO_MAS_10000 = 5
+FACTOR_EDIFICADO = 100
+VALOR_M2_PROTOTIPICO = 382.45
 
-# 3. TABLA DE BASE IMPONIBLE (Límite Superior, Límite Inferior, CFA, Alícuota)
 TABLA_BASE_IMPONIBLE = [
     (1800000.0, 0.0, 29520.00, 0.0),
     (2025000.0, 1800000.0, 29520.00, 0.0150),
@@ -25,12 +22,12 @@ TABLA_BASE_IMPONIBLE = [
     (9450000.0, 6750000.0, 177592.50, 0.0164),
     (12150000.0, 9450000.0, 229567.50, 0.0169),
     (14850000.0, 12150000.0, 300105.00, 0.0170),
-    (float("inf"), 14850000.0, 357480.00, 0.0172),  # Mayores a 14.850.000
+    (float("inf"), 14850000.0, 357480.00, 0.0172),
 ]
 
-# 4. TABLA DE INCREMENTOS POR CUOTA (%) - Mes 1 al 12
+# Porcentajes de aumento para las cuotas posteriores (Cuotas 2 a 12)
 PORCENTAJES_AUMENTO = [
-    0.0,    # Cuota 1
+    0.0,    # Cuota 1 (Se maneja con la lógica del Art. 6 o valor directo)
     0.0,    # Cuota 2
     0.0,    # Cuota 3
     19.66,  # Cuota 4
@@ -236,7 +233,7 @@ with col_sub1:
 with col_sub2:
     var_prototipico = st.radio("Valuación Prototípica:", ["NO", "SI"])
 with col_sub3:
-    var_liq2025 = st.radio("Última liquidación 2025:", ["NO", "SI"])
+    entry_val_liq2023 = st.text_input("Última liquidación 2023 ($):", "0,00")
 
 st.markdown("---")
 
@@ -261,7 +258,6 @@ except ValueError:
     sup_terreno_pre = 0.0
     sup_edificada_pre = 0.0
 
-# --- CÁLCULO PROTOTÍPICO DINÁMICO ---
 if sup_terreno_pre <= 10000:
     val_terreno_proto = (
         sup_terreno_pre * FACTOR_TERRENO_HASTA_10000 * VALOR_M2_PROTOTIPICO
@@ -308,7 +304,6 @@ try:
     uso_sel = var_uso
     anio_sel = var_anio
 
-    # 1. COEFICIENTES POR AÑO ACTUALIZADOS HASTA 2024
     if anio_sel == "Anterior a 2022":
         ca = 6.10
     elif anio_sel == "2023":
@@ -342,7 +337,6 @@ try:
 
     bi = round(va * ca * cu * cb * cap, 2)
 
-    # --- CÁLCULO DINÁMICO DE BASE IMPONIBLE Y ALÍCUOTAS ---
     lim_inf, cfa_val, alic = 0.0, 0.0, 0.0
     for limite_sup, l_inf, cfa, alic_val in TABLA_BASE_IMPONIBLE:
         if bi <= limite_sup:
@@ -354,6 +348,22 @@ try:
     excedente = max(0.0, bi - lim_inf)
     tasa_anual = round(((excedente * alic) + cfa_val), 2)
     tasa_mensual = round(tasa_anual / 12, 2)
+
+    # --- DETERMINACIÓN DEL % DE TOPE SEGÚN ARTÍCULO 6° ---
+    if bi <= 4760000.0:
+        pct_tope_art6 = 35.0
+    elif bi <= 8500000.0:
+        pct_tope_art6 = 40.0
+    elif bi <= 11900000.0:
+        pct_tope_art6 = 45.0
+    elif bi <= 15300000.0:
+        pct_tope_art6 = 50.0
+    elif bi <= 95200000.0:
+        pct_tope_art6 = 55.0
+    elif bi <= 1700000000.0:
+        pct_tope_art6 = 60.0
+    else:
+        pct_tope_art6 = 65.0
 
     tasa_proteccion = round(tasa_mensual * 0.095, 2)
     tasa_salud = round(tasa_mensual * 0.105, 2)
@@ -376,44 +386,29 @@ try:
         subtotal_con_desc + tasa_proteccion + tasa_salud - monto_edenor, 2
     )
 
-    # 2. VIGENCIA DE VALORES MÍNIMOS POR USO
     if uso_sel == "RESIDENCIAL":
         minimo_uso = 2461.0
     elif uso_sel == "COMERCIAL":
         minimo_uso = 6750.0
-    else:  # INDUSTRIAL
+    else:
         minimo_uso = 13500.0
 
     if var_tope == "NO" and tasa_total < minimo_uso:
         tasa_total = minimo_uso
-
 
     def fmt(val):
         return (
             f"${val:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
         )
 
-
-    # --- CÁLCULO BASE CUOTA 2025 ---
-    val_cuota_2025_auto = round(tasa_mensual / 1.10, 2)
-    val_cuota_2025_auto_str = f"{val_cuota_2025_auto:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-
-    with col_sub4:
-        if var_liq2025 == "SI":
-            entry_val_liq2025 = st.text_input("Valor Cuota 2025 ($):", "0,00")
-        else:
-            entry_val_liq2025 = st.text_input(
-                "Valor Cuota 2025 ($):", value=val_cuota_2025_auto_str
-            )
-
     try:
-        val_liq2025_num = (
-            float(entry_val_liq2025.replace(".", "").replace(",", "."))
-            if entry_val_liq2025
+        val_liq2023_num = (
+            float(entry_val_liq2023.replace(".", "").replace(",", "."))
+            if entry_val_liq2023
             else 0.0
         )
     except ValueError:
-        val_liq2025_num = 0.0
+        val_liq2023_num = 0.0
 
     bi_str = fmt(bi)
     lim_str = fmt(lim_inf)
@@ -474,7 +469,6 @@ try:
             unsafe_allow_html=True,
         )
 
-
     def caja_horizontal(descripcion, valor_texto, columna_destino):
         with columna_destino:
             st.markdown(
@@ -486,7 +480,6 @@ try:
                 """,
                 unsafe_allow_html=True,
             )
-
 
     f1_c1, f1_c2, f1_c3 = st.columns(3)
     caja_horizontal("Límite inferior:", lim_str, f1_c1)
@@ -557,25 +550,27 @@ try:
     with col_t7:
         st.markdown('<div class="tabla-header">TOTAL</div>', unsafe_allow_html=True)
 
-    if var_liq2025 == "SI" and val_liq2025_num > 0:
-        sub_c_acumulado = round(val_liq2025_num * 1.10, 2)
-    else:
-        sub_c_acumulado = tasa_mensual
+    sub_c_acumulado = 0.0
 
     for i in range(1, 13):
         pct = PORCENTAJES_AUMENTO[i - 1]
 
-        if i == 1 and var_liq2025 == "SI":
-            nombre_cuota = "CUOTA 1 (10%)"
+        if i == 1:
+            if var_tope == "NO":
+                pct_cuota_1 = pct_tope_art6
+                sub_c_acumulado = round(val_liq2023_num * (1.0 + (pct_cuota_1 / 100.0)), 2)
+                nombre_cuota = f"CUOTA 1 ({pct_cuota_1:.0f}%)"
+            else:
+                sub_c_acumulado = tasa_mensual
+                nombre_cuota = "CUOTA 1 (0%)"
         else:
             nombre_cuota = (
                 f"CUOTA {i} ({pct}%)".replace(".0%", "%")
                 if pct > 0
                 else f"CUOTA {i} (0%)"
             )
-
-        if i > 1 and pct > 0:
-            sub_c_acumulado = round(sub_c_acumulado * (1.0 + (pct / 100.0)), 2)
+            if pct > 0:
+                sub_c_acumulado = round(sub_c_acumulado * (1.0 + (pct / 100.0)), 2)
 
         sub_c = sub_c_acumulado
 
