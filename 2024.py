@@ -363,9 +363,7 @@ try:
     else:
         pct_tope_art6 = 65.0
 
-    tasa_proteccion = round(tasa_mensual * 0.095, 2)
-    tasa_salud = round(tasa_mensual * 0.105, 2)
-
+    # 1. Descuentos en cascada
     monto_bc = round(tasa_mensual * 0.10, 2) if var_bc == "SI" else 0.0
     base_da = tasa_mensual - monto_bc
     monto_da = round(base_da * 0.10, 2) if var_da == "SI" else 0.0
@@ -374,13 +372,17 @@ try:
 
     subtotal_con_desc = tasa_mensual - monto_bc - monto_da - monto_be
 
+    # 2. Las sobretasas (Salud + Protección = 20%) se aplican sobre el resultado de los descuentos
+    tasa_proteccion = round(subtotal_con_desc * 0.095, 2)
+    tasa_salud = round(subtotal_con_desc * 0.105, 2)
+
     monto_edenor = (
         float(entry_edenor.replace(".", "").replace(",", "."))
         if entry_edenor
         else 0.0
     )
 
-    # CORRECCIÓN AQUÍ: Restamos el descuento de Edenor en lugar de sumarlo
+    # 3. Total final restando EDENOR
     tasa_total = round(
         subtotal_con_desc + tasa_proteccion + tasa_salud - monto_edenor, 2
     )
@@ -573,6 +575,7 @@ try:
 
         sub_c = sub_c_acumulado
 
+        # Descuentos en cascada por cuota
         m_bc_c = round(sub_c * 0.10, 2) if var_bc == "SI" else 0.0
         base_da_c = sub_c - m_bc_c
         m_da_c = round(base_da_c * 0.10, 2) if var_da == "SI" else 0.0
@@ -581,8 +584,9 @@ try:
 
         sub_desc_c = sub_c - m_bc_c - m_da_c - m_be_c
 
-        prot_c = round(sub_c * 0.095, 2)
-        salud_c = round(sub_c * 0.105, 2)
+        # Las sobretasas se aplican sobre el subtotal ya descontado
+        prot_c = round(sub_desc_c * 0.095, 2)
+        salud_c = round(sub_desc_c * 0.105, 2)
 
         # Lógica de Edenor según el monto inicial
         if abs(monto_edenor - 2000.0) < 0.01:
@@ -602,7 +606,7 @@ try:
         else:
             m_edenor_c = monto_edenor
 
-        # CORRECCIÓN AQUÍ TAMBIÉN: Se resta `m_edenor_c` en lugar de sumarlo
+        # Total de la cuota: Subtotal con descuentos + (Salud + Protección sobre el descuento) - Edenor
         total_cuota = round(sub_desc_c + prot_c + salud_c - m_edenor_c, 2)
 
         if var_tope == "NO" and total_cuota < minimo_uso:
