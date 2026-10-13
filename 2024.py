@@ -211,3 +211,7 @@ st.markdown("---")
 
 st.markdown(
     "<p style='font-weight: normal; margin-bottom: 2px;'>DESCUENTOS:</p>",
+    unsafe_allow_html=True,
+)
+
+col_desc1, col_desc2, col_desc3, col_desc4
