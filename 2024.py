@@ -26,18 +26,18 @@ TABLA_BASE_IMPONIBLE = [
 ]
 
 PORCENTAJES_AUMENTO = [
-    0.0,    # Cuota 1
-    0.0,    # Cuota 2
-    0.0,    # Cuota 3
+    0.0,  # Cuota 1
+    0.0,  # Cuota 2
+    0.0,  # Cuota 3
     19.66,  # Cuota 4
     19.66,  # Cuota 5
     19.66,  # Cuota 6
     12.50,  # Cuota 7
     11.86,  # Cuota 8
-    0.0,    # Cuota 9
-    6.68,   # Cuota 10
-    6.26,   # Cuota 11
-    0.0,    # Cuota 12
+    0.0,  # Cuota 9
+    6.68,  # Cuota 10
+    6.26,  # Cuota 11
+    0.0,  # Cuota 12
 ]
 # ==============================================================================
 
@@ -358,7 +358,7 @@ try:
         pct_tope_art6 = 50.0
     elif bi <= 95200000.0:
         pct_tope_art6 = 55.0
-    elif bi <= 1700000000.0:
+    elif bi <= 170000000.0:
         pct_tope_art6 = 60.0
     else:
         pct_tope_art6 = 65.0
@@ -380,6 +380,7 @@ try:
         else 0.0
     )
 
+    # CORRECCIÓN AQUÍ: Restamos el descuento de Edenor en lugar de sumarlo
     tasa_total = round(
         subtotal_con_desc + tasa_proteccion + tasa_salud - monto_edenor, 2
     )
@@ -601,6 +602,7 @@ try:
         else:
             m_edenor_c = monto_edenor
 
+        # CORRECCIÓN AQUÍ TAMBIÉN: Se resta `m_edenor_c` en lugar de sumarlo
         total_cuota = round(sub_desc_c + prot_c + salud_c - m_edenor_c, 2)
 
         if var_tope == "NO" and total_cuota < minimo_uso:
