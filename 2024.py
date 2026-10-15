@@ -59,13 +59,13 @@ st.markdown(
         label, p, span, div, [data-testid="stWidgetLabel"] p, .stMarkdown p {
             font-family: Arial, sans-serif !important;
             color: #1e293b !important;
-            font-size: 12px !important;
+            font-size: 16px !important;
         }
         
         div[data-testid="stMarkdownContainer"] p, .stRadio label {
             font-family: Arial, sans-serif !important;
             color: #1e293b !important;
-            font-size: 12px !important;
+            font-size: 16px !important;
         }
         
         [data-testid="stWidgetLabel"] {
@@ -78,9 +78,21 @@ st.markdown(
             gap: 8px !important;
         }
         
+        /* Quitar fondo gris y estilizar los inputs de texto y selectbox */
+        div[data-baseweb="input"], div[data-baseweb="input"] > div, 
+        div[data-baseweb="select"], div[data-baseweb="select"] > div,
+        input, select {
+            background-color: #ffffff !important;
+            background: #ffffff !important;
+        }
+        
+        div[data-baseweb="input"] > div, div[data-baseweb="select"] > div {
+            border-color: #cbd5e1 !important;
+        }
+        
         .resultado-box {
             background-color: #ffffff !important;
-            padding: 5px 10px !important;
+            padding: 6px 10px !important;
             border-radius: 4px !important;
             border: 1px solid #cbd5e1 !important;
             margin-bottom: 3px !important;
@@ -89,12 +101,12 @@ st.markdown(
             align-items: center !important;
             box-shadow: 0 1px 2px rgba(0,0,0,0.04) !important;
             text-align: center !important;
-            min-height: 28px !important;
+            min-height: 36px !important;
         }
         
         .resultado-box-tabla {
             background-color: #ffffff !important;
-            padding: 5px 8px !important;
+            padding: 6px 8px !important;
             border-radius: 4px !important;
             border: 1px solid #cbd5e1 !important;
             margin-bottom: 3px !important;
@@ -103,7 +115,7 @@ st.markdown(
             align-items: center !important;
             box-shadow: 0 1px 2px rgba(0,0,0,0.04) !important;
             text-align: left !important;
-            min-height: 28px !important;
+            min-height: 36px !important;
         }
         
         .tabla-header {
@@ -111,12 +123,12 @@ st.markdown(
             color: #1e293b !important;
             font-weight: normal;
             text-align: left;
-            padding: 5px 8px !important;
+            padding: 6px 8px !important;
             border: 1px solid #cbd5e1 !important;
             border-radius: 4px !important;
-            font-size: 11px !important;
+            font-size: 15px !important;
             text-transform: uppercase;
-            min-height: 28px !important;
+            min-height: 36px !important;
             display: flex;
             align-items: center;
             justify-content: flex-start;
@@ -131,7 +143,7 @@ st.markdown(
             text-align: center;
             margin-bottom: 4px;
             border-radius: 4px;
-            font-size: 12px !important;
+            font-size: 16px !important;
             box-shadow: 0 1px 2px rgba(0,0,0,0.04);
         }
         
@@ -139,14 +151,14 @@ st.markdown(
             font-family: Arial, sans-serif !important;
             color: #1e293b !important;
             font-weight: normal !important;
-            font-size: 12px !important;
+            font-size: 16px !important;
         }
         
         .resultado-valor {
             font-family: Arial, sans-serif !important;
             color: #1e293b !important;
             font-weight: normal !important;
-            font-size: 12px !important;
+            font-size: 16px !important;
         }
         
         .stButton>button {
@@ -157,14 +169,14 @@ st.markdown(
             border: none !important;
             padding: 6px 12px !important;
             width: 100% !important;
-            font-size: 12px !important;
+            font-size: 16px !important;
         }
 
         @media print {
             body, .stApp, [data-testid="stAppViewContainer"] {
                 background-color: #ffffff !important;
                 color: #000000 !important;
-                font-size: 8pt !important;
+                font-size: 10pt !important;
             }
             header, [data-testid="stSidebar"], [data-testid="stHeader"], .stDeployButton, [data-testid="stDecoration"] {
                 display: none !important;
@@ -445,7 +457,7 @@ try:
 
     st.markdown("---")
     st.markdown(
-        "<p style='font-family: Arial, sans-serif; font-size: 12px; font-weight:"
+        "<p style='font-family: Arial, sans-serif; font-size: 16px; font-weight:"
         " normal; text-transform: uppercase; margin-bottom: 4px;'>BASE IMPONIBLE"
         " Y COEFICIENTES</p>",
         unsafe_allow_html=True,
@@ -512,8 +524,8 @@ try:
     st.markdown(
         f"""
         <div class="resultado-box" style="border: 2px solid #1e293b !important; margin-top: 4px; padding: 6px 10px;">
-            <span class="resultado-label" style="font-size: 13px;">TSG Total:</span>
-            <span class="resultado-valor" style="font-size: 13px;">{tasa_total_str}</span>
+            <span class="resultado-label" style="font-size: 17px;">TSG Total:</span>
+            <span class="resultado-valor" style="font-size: 17px;">{tasa_total_str}</span>
         </div>
         """,
         unsafe_allow_html=True,
